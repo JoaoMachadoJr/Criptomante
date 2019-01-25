@@ -40,7 +40,7 @@ public class Topico {
             
         PreparedStatement stmt;
 		try {
-			stmt = Banco.prepare("select website, url from topicos where data is null and data_processamento is null ans website=?");
+			stmt = Banco.prepare("select website, url from topicos where data_processamento is null and website=? order by url");
 			
 			stmt.setString(1, website);
 			ResultSet rs = stmt.executeQuery();
@@ -59,9 +59,34 @@ public class Topico {
 	public void atualizar_data() {
 		PreparedStatement stmt;
 		try {
-			stmt = Banco.prepare("update topicos set data=? where url=?");
+			stmt = Banco.prepare("update topicos set data=?, ultima_atualizacao=?  where url=?");
 			stmt.setTimestamp(1, java.sql.Timestamp.from(this.data.toInstant(ZoneOffset.UTC)));
+			stmt.setTimestamp(2, java.sql.Timestamp.from(this.ultima_atualizacao.toInstant(ZoneOffset.UTC)));
+                        stmt.setString(3, url);
+			stmt.execute();
+		} catch (Exception e) {
+			Log.log(e);
+		}      
+	}
+        
+        public void atualizar_data_ultima_atualizacao() {
+		PreparedStatement stmt;
+		try {
+			stmt = Banco.prepare("update topicos set ultima_atualizacao=? where url=?");
+			stmt.setTimestamp(1, java.sql.Timestamp.from(this.ultima_atualizacao.toInstant(ZoneOffset.UTC)));
 			stmt.setString(2, url);
+			stmt.execute();
+		} catch (Exception e) {
+			Log.log(e);
+		}      
+	}
+        
+        public void atualizar_data_processamento() {
+		PreparedStatement stmt;
+		try {
+			stmt = Banco.prepare("update topicos set data_processamento=?  where url=?");
+			stmt.setTimestamp(1, java.sql.Timestamp.from(this.data_processamento.toInstant(ZoneOffset.UTC)));
+                        stmt.setString(2, url);
 			stmt.execute();
 		} catch (Exception e) {
 			Log.log(e);

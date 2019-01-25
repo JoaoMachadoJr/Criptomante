@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javafx.util.converter.LocalDateTimeStringConverter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -69,15 +70,16 @@ public class Crawler  extends Thread{
 	}
 	public void processar_website() {
 		if (pagina_atual == null) {
-			pagina_atual = website;
+			pagina_atual = inicio_navegacao;
 		}
 		Log.log("Website: "+website+" => Começando indexação...");
-
-		while (pagina_atual != null) {
+                
+                pagina_atual ="";
+		while ((pagina_atual != null) && (pagina_atual !="" )) {
 			//=====Antes de buscar o primeiro topico
 			try {
 				Log.log("Website: "+website+" => Página: "+pagina_atual);
-				String html = Jsoup.connect(pagina_atual).get().html();
+				String html = Jsoup.connect(pagina_atual).ignoreContentType(true).get().html();
 
 				
 //				System.setProperty("webdriver.chrome.driver", new File(".").getAbsolutePath()+"/lib/chromedriver.exe");
@@ -98,7 +100,11 @@ public class Crawler  extends Thread{
 			}
 		}
 		
-		Log.log("Website: "+website+" => Começando processamento...");
+		Log.log("Website: "+website+" => Começando processamento dos tópícos...");
+                
+                processar_topicos();
+                
+                Log.log("Website: "+website+" => Concluído!");
 
 	}
 	
@@ -106,7 +112,7 @@ public class Crawler  extends Thread{
 		html = Str_Utils.after(html, inicio_topico);
 		html = Str_Utils.after(html, inicio_link_topico);
 		String url_topico = Str_Utils.before(html, final_link_topico);
-		url_topico = url_raiz + url_topico;
+		url_topico = url_raiz_topico + url_topico;
 		html = Str_Utils.after(html, final_link_topico);
 		html = Str_Utils.after(html, fim_topico);
 		Topico t = new Topico();
@@ -117,7 +123,8 @@ public class Crawler  extends Thread{
 	}
 	
 	public void encontrar_proxima_url(String html) {
-		String html2 = html;
+            try {
+            	String html2 = html;
 		if (proxima_pagina_depois_ultimo_topico) {
 			html2 = Str_Utils.after(html2, antes_primeiro_topico);
 			html2 = Str_Utils.after(html2, fim_ultimo_topico);
@@ -125,9 +132,13 @@ public class Crawler  extends Thread{
 		
 		html2 = Str_Utils.after(html2, antes_link_proxima_pagina);
 		pagina_atual = Str_Utils.before(html2, fim_link_proxima_pagina);
-		pagina_atual = website + pagina_atual;
-	}
+		pagina_atual = url_raiz_navegacao + pagina_atual;
+            }    
+             catch (Exception e) {
+                pagina_atual="";
+            }
 
+        }
 	public void processar_topicos() {
 		
 		List<Topico> topicos = Topico.listar_nao_processados(website);
@@ -137,20 +148,26 @@ public class Crawler  extends Thread{
 			try {
 				String html = Jsoup.connect(t.url).get().html();
 				
-				html = Str_Utils.after(html, antes_primeira_mensagem);
-				html = Str_Utils.after(html, inicio_primeira_mensagem);
+                                if (deve_processar(html)){
+                                    html = Str_Utils.after(html, antes_primeira_mensagem);
+                                    html = Str_Utils.after(html, inicio_primeira_mensagem);
 
-				html = processar_primeira_mensagem(html,t);
+                                    html = processar_primeira_mensagem(html,t);
+
+                                    html = Str_Utils.after(html, final_primeira_mensagem);
+                                    html = Str_Utils.after(html, antes_mensagens_comuns);
+
+                                    while (html.contains(inicio_mensagem_comum) && html.contains(inicio_texto_mensagem_comum) && html.contains(final_texto_mensagem_comum) && html.contains(final_mensagem_comum)) {
+                                            html = processar_mensagem_comum(html,t);
+                                    }
+
+                                        
+                                }
+				t.data_processamento = LocalDateTime.now();
+                                t.atualizar_data_processamento();
 				
-				html = Str_Utils.after(html, final_primeira_mensagem);
-				html = Str_Utils.after(html, antes_mensagens_comuns);
 				
-				while (html.contains(inicio_mensagem_comum) && html.contains(inicio_texto_mensagem_comum) && html.contains(final_texto_mensagem_comum) && html.contains(final_mensagem_comum)) {
-					html = processar_mensagem_comum(html,t);
-				}
-				
-				
-			} catch (IOException e) { Log.log(e); }
+			} catch (Exception e) { System.out.println("Erro no tópico: "+t.url); Log.log(e); }
 		}
 
 	}
@@ -167,13 +184,24 @@ public class Crawler  extends Thread{
 		html_local_data = Str_Utils.after(html_local_data, final_data_primeira_mensagem);
 		
 		//Buscar texto
-		html_local_texto = Str_Utils.after(html_local_texto, inicio_texto_primeira_mensagem);
-		m.texto = Str_Utils.sem_tags(Str_Utils.before(html_local_texto, final_texto_primeira_mensagem));
-		html_local_texto = Str_Utils.after(html_local_texto, final_texto_primeira_mensagem);
+                if (html_local_texto.contains(inicio_texto_primeira_mensagem)&& html_local_texto.contains(final_texto_primeira_mensagem)){
+                    html_local_texto = Str_Utils.after(html_local_texto, inicio_texto_primeira_mensagem);
+                    m.texto = Str_Utils.sem_tags(Str_Utils.before(html_local_texto, final_texto_primeira_mensagem));
+                    m.texto = Str_Utils.apenas_texto(m.texto);
+                    html_local_texto = Str_Utils.after(html_local_texto, final_texto_primeira_mensagem);     
+                }
+                else{
+                  m.texto = "";  
+                }
+		
 		
 		topico.data = m.data;
+                topico.ultima_atualizacao = m.data;
 		topico.atualizar_data();
 		
+                if(m.texto!=""){
+                   m.inserir();
+                }
 		//Retorno a menor string, para eliminar a maior quantidade de html possível
 		if (html_local_texto.length()<html_local_data.length())
 			return html_local_texto;
@@ -194,7 +222,15 @@ public class Crawler  extends Thread{
 		//Buscar texto
 		html_local_texto = Str_Utils.after(html_local_texto, inicio_texto_mensagem_comum);
 		m.texto = Str_Utils.sem_tags(Str_Utils.before(html_local_texto, final_texto_mensagem_comum));
+                m.texto = Str_Utils.apenas_texto(m.texto);
 		html_local_texto = Str_Utils.after(html_local_texto, final_texto_mensagem_comum);
+                
+                if(m.texto!=""){
+                   m.inserir();
+                }
+                
+                topico.ultima_atualizacao = m.data;
+                topico.atualizar_data_ultima_atualizacao();
 		
 		//Retorno a menor string, para eliminar a maior quantidade de html possível
 		if (html_local_texto.length()<html_local_data.length())
@@ -202,5 +238,9 @@ public class Crawler  extends Thread{
 		else
 			return html_local_data;
 	}
+        
+        public boolean deve_processar(String html){
+            return true;
+        }
 
 }

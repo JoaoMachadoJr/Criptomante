@@ -1,5 +1,7 @@
 package misc;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Str_Utils {
 	
 	public static String after(String entrada, String substring, int ocorrencia) {
@@ -52,11 +54,37 @@ public class Str_Utils {
 	}
 	
 	public static String sem_tags(String entrada) {
-		String saida = entrada;
-		while (saida.contains("<") && saida.contains(">")) {
-			saida = after(saida, ">");
-		}
+		String saida = "";
+                boolean dentro_de_uma_tags = false;
+                for (char c: entrada.toCharArray()) {
+                    if (dentro_de_uma_tags) {
+                        if (c=='>'){
+                           dentro_de_uma_tags = false; 
+                        }
+                    }
+                    else{
+                        if (c=='<'){
+                          dentro_de_uma_tags = true;  
+                        }
+                        else{
+                            saida = saida+c;
+                        }
+                    }
+                }
+
 		return saida;
 	}
+        
+        public static String apenas_texto(String entrada){
+            String saida = StringUtils.stripAccents(entrada);
+            saida=saida.replace("\n\r", " ");
+            saida=saida.replace('\n', ' ');
+            saida=saida.replace(System.lineSeparator(), " ");
+            while (saida.contains("  ")){
+                saida = saida.replace("  ", " ");
+            }
+            saida =saida.replaceAll("[^a-zA-Z0-9 ]", "");
+            return saida;
+        }
 
 }
