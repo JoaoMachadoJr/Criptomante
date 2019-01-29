@@ -74,7 +74,7 @@ public class Crawler  extends Thread{
 		}
 		Log.log("Website: "+website+" => Começando indexação...");
                 
-                pagina_atual ="";
+                
 		while ((pagina_atual != null) && (pagina_atual !="" )) {
 			//=====Antes de buscar o primeiro topico
 			try {

@@ -1,6 +1,7 @@
 package main;
 
 import crawlers.Crawler_reddit_bitcoin;
+import crawlers.Crawler_reddit_bitcoinmarkets;
 import misc.Config;
 import misc.Log;
 import threads.Consulta_Traders;
@@ -15,7 +16,7 @@ public class Main {
     	//realizar_Previsoes.start();
     	//consulta_Traders.start();
     	
-    	new Crawler_reddit_bitcoin().processar_website();;
+    	new Crawler_reddit_bitcoinmarkets().processar_website();;
     	try {
 	    	while (realizar_Previsoes.isAlive() || consulta_Traders.isAlive()) {
 					Thread.sleep(1000*Config.sleep_main);

@@ -54,6 +54,8 @@ public class Crawler_reddit_bitcoin extends Crawler {
                 String html2 = html;
 		html2= html2.substring(html2.lastIndexOf("\"created_utc\": ")+15);
                 html2 = html2.substring(0,html2.indexOf(","));
+                if (html2.contains(".")) 
+                    html2.substring(0,html2.indexOf(".")) ;
                 pagina_atual = url_raiz_navegacao+"&before="+html2;
             } catch (Exception e) {
                 pagina_atual= "";
