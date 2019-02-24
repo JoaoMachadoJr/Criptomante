@@ -146,6 +146,7 @@ public class Crawler  extends Thread{
 		for (int i=0; i<topicos.size(); i++) {
 			Topico t = topicos.get(i);
 			try {
+                                Log.log("Procrssar tópico "+(i+1)+"/"+topicos.size()+": "+t.url);
 				String html = Jsoup.connect(t.url).get().html();
 				
                                 if (deve_processar(html)){
