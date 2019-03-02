@@ -1,1 +1,5 @@
 /dist/
+/build/
+/temp/
+/build/*
+/build/built-jar.properties
