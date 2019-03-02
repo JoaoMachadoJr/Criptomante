@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import javafx.util.converter.LocalDateTimeStringConverter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -74,27 +73,23 @@ public class Crawler  extends Thread{
 		}
 		Log.log("Website: "+website+" => Começando indexação...");
                 
-                
 		while ((pagina_atual != null) && (pagina_atual !="" )) {
 			//=====Antes de buscar o primeiro topico
 			try {
 				Log.log("Website: "+website+" => Página: "+pagina_atual);
 				String html = Jsoup.connect(pagina_atual).ignoreContentType(true).get().html();
-
 				
 //				System.setProperty("webdriver.chrome.driver", new File(".").getAbsolutePath()+"/lib/chromedriver.exe");
 //				WebDriver driver = new ChromeDriver();
 //				driver.get(pagina_atual);				
 				
 				encontrar_proxima_url(html);
-				
 				html = Str_Utils.after(html, antes_primeiro_topico);
 				//=======Indexação de topicos
 				while (html.contains(inicio_topico) && 	html.contains(inicio_link_topico) &&
 						html.contains(final_link_topico) &&	html.contains(fim_topico)) {
-					html = encontrar_topico(html);
+                                    html = encontrar_topico(html);
 				}
-				
 			} catch (IOException e) {
 				Log.log(e);
 			}
@@ -118,7 +113,7 @@ public class Crawler  extends Thread{
 		Topico t = new Topico();
 		t.website = website;
 		t.url = url_topico;
-		t.integrar();	
+		t.integrar();
 		return html;
 	}
 	
@@ -129,9 +124,9 @@ public class Crawler  extends Thread{
 			html2 = Str_Utils.after(html2, antes_primeiro_topico);
 			html2 = Str_Utils.after(html2, fim_ultimo_topico);
 		}
-		
 		html2 = Str_Utils.after(html2, antes_link_proxima_pagina);
 		pagina_atual = Str_Utils.before(html2, fim_link_proxima_pagina);
+                
 		pagina_atual = url_raiz_navegacao + pagina_atual;
             }    
              catch (Exception e) {
