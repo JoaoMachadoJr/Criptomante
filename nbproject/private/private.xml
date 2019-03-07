@@ -3,9 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Criptomante/src/main/Main.java</file>
-            <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Criptomante/src/crawlers/Crawler_reddit_bitcoin.java</file>
-            <file>file:/C:/Users/Administrator/Documents/NetBeansProjects/Criptomante/src/crawlers/Crawler.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/model/Cotacao.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/threads/Realizar_Previsoes.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/crawlers/Crawler_reddit_bitcoinmarkets.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/model/Topico.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/misc/Str_Utils.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/crawlers/Crawler_reddit_bitcoin.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/threads/Consulta_Traders.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/crawlers/Crawler.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/main/Main.java</file>
+            <file>file:/C:/Users/Joao%20Casa/Documents/NetBeansProjects/Criptomante/src/misc/Log.java</file>
         </group>
     </open-files>
 </project-private>

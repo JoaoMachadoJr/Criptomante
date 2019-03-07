@@ -5,12 +5,14 @@ import crawlers.Crawler_reddit_bitcoin;
 import crawlers.Crawler_reddit_bitcoinmarkets;
 import misc.Config;
 import misc.Log;
+import model.Mensagem;
 import threads.Consulta_Traders;
 import threads.Realizar_Previsoes;
 
 public class Main {
 	
     public static void main(String[] args) {
+        Mensagem.indexar();
     	Realizar_Previsoes realizar_Previsoes = new Realizar_Previsoes();
     	Consulta_Traders consulta_Traders = new Consulta_Traders();
         Crawler cr_reddit_bitcoin = null;

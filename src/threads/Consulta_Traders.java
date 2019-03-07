@@ -48,6 +48,8 @@ public class Consulta_Traders extends Thread{
                     
                     trader.atualizar();  
                 }
+                Log.log("Todos os traders atualizados. stand by por 15 minutos");
+                Thread.sleep(1000*60*16);
             } catch (Exception e) {
                 Log.log(e);
             }
@@ -55,8 +57,10 @@ public class Consulta_Traders extends Thread{
     }
     
     public static void Atualizar_cotacoes_recentes(Trader trader) throws Exception{
+        Log.log("Iniciando rotina de solicitar cotações recentes do trader:"+trader.nome);
         Cotacao cotacao = new Cotacao();
         String nome = trader.nome;
+        
         String url = "http://api.bitcoincharts.com/v1/trades.csv?symbol="; //URL base
         url = url + nome; //Selecionando o trader
         url = url + "&start="+trader.ultimo.toEpochSecond(ZoneOffset.UTC);
@@ -72,6 +76,8 @@ public class Consulta_Traders extends Thread{
        Cotacao cotacao = new Cotacao();
        cotacao.data =   LocalDateTime.MIN;
        String nome = trader.nome;
+       int c_int =0;
+       char c = 'a';
        String url = "http://api.bitcoincharts.com/v1/csv/";
        Document pagina = Jsoup.parse(Jsoup.connect(url).get().html());
        for (Element link : pagina.select("a")) {
@@ -102,7 +108,8 @@ public class Consulta_Traders extends Thread{
                 InputStreamReader isr = new InputStreamReader(new FileInputStream(arquivo_csv.getAbsolutePath()+arquivo_csv.getName()),"UTF-8");
                 BufferedReader br = new BufferedReader(isr);
                 String linha = "";
-                while((linha=linha+(char) br.read()) != null){
+                while((c_int= br.read()) != -1){
+                    linha = linha + (char) c_int;
                     if ((linha.contains(" "))||linha.contains("\n")){
                         linha = linha.replace(" ", "").replace("\n", "");
                         ler_linha(linha,cotacao,trader,nome);
@@ -111,6 +118,8 @@ public class Consulta_Traders extends Thread{
                 }
                 br.close();
                 trader.atualizar();
+                Log.log("Terminou de pedir cotacoes antigas do trader");
+                        
             }
         }
     }

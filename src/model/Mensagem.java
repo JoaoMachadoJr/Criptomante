@@ -33,7 +33,31 @@ public class Mensagem {
 			// TODO Auto-generated catch block
 			Log.log(e);;
 		}
+	}
         
         
+        public static void indexar() {
+		PreparedStatement stmt;
+                int i = 0;
+		try {
+			stmt = Banco.prepare("select count(*) as qnt from mensagens m join vw_dias_com_variacao d on d.data=m.data::date where not indexado");
+			ResultSet rs = stmt.executeQuery();
+                        rs.next();
+                        int qnt = rs.getInt("qnt");
+                        boolean terminou = false;
+                        Log.log("Indexados: "+i+"/"+qnt);
+                        
+                        while (!terminou){
+                          stmt = Banco.prepare("select fn_analise_textual_indexar_mensagens_v2(10000) as processou");
+                          rs = stmt.executeQuery();
+                          rs.next();
+                          terminou = !rs.getBoolean("processou");
+                          i = i + 10000;
+                          Log.log("Indexados: "+i+"/"+qnt);
+                        }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Log.log(e);;
+		}
 	}
 }
